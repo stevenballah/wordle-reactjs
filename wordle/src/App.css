@@ -63,8 +63,8 @@ nav h1, p{
 }
 
 .keyboard {
-  width: 700px;
-  height: 300px;
+  width: 90%;
+  height: 50%;
   margin-top: 60px;
 }
 
@@ -111,14 +111,24 @@ nav h1, p{
 
 #correct {
   background-color: #528d4e;
+
+  transform: rotate( 360deg );
+  transition: transform 1s;
+  transform-style: preserve-3d;
 }
 
 #almost {
   background-color: #b49f39;
+  transform: rotate( 360deg );
+  transition: transform 1s;
+  transform-style: preserve-3d;
 }
 
 #error {
   background-color: #3a393c;
+  transform: rotate( 360deg );
+  transition: transform 1s;
+  transform-style: preserve-3d;
 }
 
 #disabled {
@@ -126,6 +136,8 @@ nav h1, p{
 }
 
 .newGame {
+  margin-top: 20px;
+  margin-bottom: 20px;
   background-color: #3a393c;
   border: none;
   color: white;
@@ -136,4 +148,13 @@ nav h1, p{
   display: inline-block;
   font-size: 16px;
   border: 1px solid grey;
+}
+
+.definitions {
+  width: 100%;
+  text-align: center;
+}
+.definition {
+  max-width: 60%;
+  margin: auto;
 }

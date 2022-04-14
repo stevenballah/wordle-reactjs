@@ -1,4 +1,5 @@
 import React, { useState, createContext, useEffect } from "react";
+import api from "./api/axios";
 import "./App.css";
 import Board from "./components/Board.js";
 import Keyboard from "./components/Keyboard";
@@ -14,7 +15,19 @@ function App() {
   const [disabledLetters, setDisabledLetters] = useState([]);
   const [correctLetters, setCorrectLetters] = useState([]);
   const [correctWord, setCorrectWord] = useState("");
-  const [gameOver, setGameOver] = useState({gameOver: false, guessedWord: false});
+  const [gameOver, setGameOver] = useState({
+    gameOver: false,
+    guessedWord: false,
+  });
+  const [defineWord, setDefineWord] = useState([]);
+  
+  async function fetchDefinition() {
+    const result = await api.get(`${correctWord}`)
+    //console.log(result.data[0].meanings[0]);
+    if (result.data) {
+      setDefineWord(result.data[0].meanings[0].definitions);
+    }
+  }
 
   useEffect(() => {
     generateWordSet().then((words) => {
@@ -22,6 +35,16 @@ function App() {
       setCorrectWord(words.todaysWord);
     });
   }, []);
+
+  useEffect(() => {
+    if (correctWord !== "") {
+      const getDefinition = async () => {
+        await fetchDefinition();
+      }
+      getDefinition();
+    }
+  }, [correctWord])
+  
 
   const onSelectLetter = (keyVal) => {
     if (currAttempt.letterPos > 4) return;
@@ -49,17 +72,17 @@ function App() {
 
     if (wordSet.has(currentWord.toLowerCase())) {
       setCurrAttempt({ attempt: currAttempt.attempt + 1, letterPos: 0 });
+
+      if (currAttempt.attempt === 5 && wordSet) {
+        setGameOver({ gameOver: true, guessedWord: false });
+        return;
+      }
     } else {
       alert("Word not found!");
     }
 
     if (currentWord.toLowerCase() === correctWord) {
-      setGameOver({gameOver: true, guessedWord: true});
-      return;
-    }
-
-    if (currAttempt.attempt === 5) {
-      setGameOver({gameOver: true, guessedWord: false});
+      setGameOver({ gameOver: true, guessedWord: true });
       return;
     }
   };
@@ -86,7 +109,8 @@ function App() {
           correctLetters,
           setCorrectLetters,
           setGameOver,
-          gameOver
+          gameOver,
+          defineWord
         }}
       >
         <div className="game">
