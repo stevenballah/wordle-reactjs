@@ -73,7 +73,7 @@ function App() {
     if (wordSet.has(currentWord.toLowerCase())) {
       setCurrAttempt({ attempt: currAttempt.attempt + 1, letterPos: 0 });
 
-      if (currAttempt.attempt === 5 && wordSet) {
+      if (currAttempt.attempt === 5) {
         setGameOver({ gameOver: true, guessedWord: false });
         return;
       }
