@@ -3,11 +3,13 @@ import api from "./api/axios";
 import "./App.css";
 import Board from "./components/Board.js";
 import Keyboard from "./components/Keyboard";
+import Confetti from "./Confetti";
 import GameOver from "./GameOver";
 import { boardDefault, generateWordSet } from "./Words";
 
 export const AppContext = createContext();
 function App() {
+
   const [colorScheme, setColorScheme] = useState("default");
   const [board, setBoard] = useState(boardDefault);
   const [currAttempt, setCurrAttempt] = useState({ attempt: 0, letterPos: 0 });
@@ -73,17 +75,16 @@ function App() {
     if (wordSet.has(currentWord.toLowerCase())) {
       setCurrAttempt({ attempt: currAttempt.attempt + 1, letterPos: 0 });
 
-      if (currAttempt.attempt === 5) {
+      if (currAttempt.attempt === 5 && currentWord.toLowerCase() !== correctWord) {
         setGameOver({ gameOver: true, guessedWord: false });
+        return;
+      }
+      if (currentWord.toLowerCase() === correctWord) {
+        setGameOver({ gameOver: true, guessedWord: true });
         return;
       }
     } else {
       alert("Word not found!");
-    }
-
-    if (currentWord.toLowerCase() === correctWord) {
-      setGameOver({ gameOver: true, guessedWord: true });
-      return;
     }
   };
 
@@ -93,7 +94,7 @@ function App() {
         <h1>Wordle Unlimited</h1>
         <p>Developed by Steven Ballah</p>
       </nav>
-
+      
       <AppContext.Provider
         value={{
           board,
@@ -116,6 +117,7 @@ function App() {
         <div className="game">
           <Board />
           {gameOver.gameOver ? <GameOver /> : <Keyboard />}
+          {gameOver.guessedWord ? <Confetti /> : null}
         </div>
       </AppContext.Provider>
     </div>
