@@ -6,21 +6,40 @@ function Letter({ letterPos, attemptVal }) {
 
   const letter = board[attemptVal][letterPos];
 
-  //IF THE POS OF THE CORRECT WORD === THE LETTER INSIDE THE GAME BOARD
-  const correct = correctWord.toUpperCase()[letterPos] === letter;
-  //IF THE LETTER IS INCLUDED WITHIN THE CORRECT WORD
-  const almost = !correct && letter !== "" && correctWord.toUpperCase().includes(letter);
+  // Convert correctWord to uppercase for consistent comparison
+  const correctWordArray = correctWord.toUpperCase().split('');
+  const currentGuessArray = board[attemptVal];
 
-  const letterState =
-    currAttempt.attempt > attemptVal &&
-    (correct ? "correct" : almost ? "almost" : "error");
+  let letterState = '';
+
+  if (currAttempt.attempt > attemptVal) {
+    // Check for correct letters first
+    if (correctWordArray[letterPos] === letter) {
+      letterState = 'correct';
+      correctWordArray[letterPos] = null; // Mark this letter as used
+    } else {
+      // If not correct, check for almost matches
+      if (correctWordArray.includes(letter)) {
+        // Ensure it's not used already in a correct match
+        const index = correctWordArray.indexOf(letter);
+        if (index !== -1 && currentGuessArray[index] !== correctWordArray[index]) {
+          letterState = 'almost';
+          correctWordArray[index] = null; // Mark this letter as used
+        } else {
+          letterState = 'error';
+        }
+      } else {
+        letterState = 'error';
+      }
+    }
+  }
 
   useEffect(() => {
-    if (letter !== "" && !correct && !almost) {
-        setDisabledLetters((prev) => [...prev, letter]);
+    if (letter !== "" && letterState === 'error') {
+      setDisabledLetters((prev) => [...prev, letter]);
     }
-    if (letter && correct) {
-        setCorrectLetters((prev) => [...prev, letter]);
+    if (letter !== "" && letterState === 'correct') {
+      setCorrectLetters((prev) => [...prev, letter]);
     }
   }, [currAttempt.attempt]);
 
